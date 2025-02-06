@@ -43,7 +43,7 @@ public class Elevator extends SubsystemBase{
     
     ProfiledPIDController controller = new ProfiledPIDController(0.5, 0, 0, constraints);
     
-    public Elevator(double p, double i, double d){
+    public Elevator(){
         
         SmartDashboard.putData("Elevator PID", controller);
 
@@ -59,7 +59,7 @@ public class Elevator extends SubsystemBase{
         m_elevator.configure(mainConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         m_follower.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        controller.setGoal(this.getMeasurement());
+        controller.setGoal(0.0);
         controller.enableContinuousInput(0, 1);
     }
 
@@ -67,7 +67,7 @@ public class Elevator extends SubsystemBase{
     public Command moveToPosition(Double position){
         return sequence(
             runOnce(()->{controller.setGoal(position);}),
-            run(()->{run();}).until(controller::atGoal)
+            run(()->{runElevator();}).until(controller::atGoal)
         );
     }
 
@@ -75,11 +75,11 @@ public class Elevator extends SubsystemBase{
         encoder.setPosition(0);
     }
     
-    protected void run(){
+    public void runElevator(){
         m_elevator.set(controller.calculate(getMeasurement(), controller.getGoal()));
     }
 
-    protected double getMeasurement(){
+    public double getMeasurement(){
         return encoder.getPosition();
     }
 

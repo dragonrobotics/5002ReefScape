@@ -19,7 +19,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.swervedrive.DriveTrain;
+
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+
 import java.io.File;
 import swervelib.SwerveInputStream;
 
@@ -36,6 +40,8 @@ public class RobotContainer
   // The robot's subsystems and commands are defined here...
   private final DriveTrain       drivebase  = new DriveTrain(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve"));
+
+  private final Elevator elevator = new Elevator();
   // Applies deadbands and inverts controls because joysticks
   // are back-right positive while robot
   // controls are front-left positive
@@ -133,46 +139,45 @@ public class RobotContainer
   private void configureBindings()
   {
     // (Condition) ? Return-On-True : Return-on-False
-    drivebase.setDefaultCommand(!RobotBase.isSimulation() ?
-                                driveFieldOrientedDirectAngle :
-                                driveFieldOrientedDirectAngleSim);
+    drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
 
     if (Robot.isSimulation())
     {
       driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
     }
-    if (DriverStation.isTest())
-    {
-      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity); // Overrides drive command above!
-
-      driverXbox.b().whileTrue(drivebase.sysIdDriveMotorCommand());
-      driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
-      driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      driverXbox.back().whileTrue(drivebase.centerModulesCommand());
-      driverXbox.leftBumper().onTrue(Commands.none());
-      driverXbox.rightBumper().onTrue(Commands.none());
-    } else
-    {
-      driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+    
+      driverXbox.back().onTrue((Commands.runOnce(drivebase::zeroGyro)));
       driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
       /*driverXbox.b().whileTrue(
           drivebase.driveToPose(
               new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
                               );*/
-      driverXbox.start().whileTrue(Commands.none());
-      driverXbox.back().whileTrue(Commands.none());
-      driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverXbox.rightBumper().onTrue(Commands.none());
-    }
+      driverXbox.povDown().onTrue(elevatorDown());
 
-  }
+      driverXbox.povRight().onTrue(elevatorMid());
+
+      driverXbox.povUp().onTrue(elevatorUp());
+      
+    }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
    */
+  
+  public Command elevatorDown(){
+    return runOnce(()-> {elevator.moveToPosition(0.0);}, elevator);
+  }
+
+  public Command elevatorMid(){
+    return runOnce(()-> {elevator.moveToPosition(14.0);}, elevator);
+  }
+
+  public Command elevatorUp(){
+    return runOnce(()-> {elevator.moveToPosition(28.0);}, elevator);
+  }
+
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
