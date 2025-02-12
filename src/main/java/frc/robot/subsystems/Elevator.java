@@ -28,9 +28,7 @@ import frc.robot.Constants.OperatorConstants;
 
 public class Elevator extends SubsystemBase{
 
-    //goes from 0 to 28
-
-    Constants.OperatorConstants constants;
+    //goes from 0 to 27.5
 
     final SparkMax m_elevator = new SparkMax(OperatorConstants.m_elevator, MotorType.kBrushless);
     final SparkMax m_follower = new SparkMax(OperatorConstants.m_elevatorFollower, MotorType.kBrushless);
@@ -50,12 +48,18 @@ public class Elevator extends SubsystemBase{
 
         mainConfig
             .idleMode(IdleMode.kBrake)
-            .smartCurrentLimit(15);
-
+            .smartCurrentLimit(15)
+        .encoder
+            .positionConversionFactor(OperatorConstants.elvatorConversionFactor)
+            .velocityConversionFactor(OperatorConstants.elvatorConversionFactor/60);
+            
         followerConfig
             .follow(m_elevator)
             .idleMode(IdleMode.kBrake)
-            .smartCurrentLimit(15);
+            .smartCurrentLimit(15)
+        .encoder
+            .positionConversionFactor(OperatorConstants.elvatorConversionFactor)
+            .velocityConversionFactor(OperatorConstants.elvatorConversionFactor/60);
 
         m_elevator.configure(mainConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         m_follower.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -100,7 +104,6 @@ public class Elevator extends SubsystemBase{
         Double factor = getMeasurement();
         factor = 17.5 / getMeasurement();
 
-
         mainConfig.alternateEncoder
                 .positionConversionFactor(factor)
                 .velocityConversionFactor(factor/60);
@@ -108,7 +111,9 @@ public class Elevator extends SubsystemBase{
         followerConfig.alternateEncoder
                 .positionConversionFactor(factor)
                 .velocityConversionFactor(factor/60);
-                
+
+        SmartDashboard.putNumber("Conversion Factor", factor);
+
     }
 
     @Override

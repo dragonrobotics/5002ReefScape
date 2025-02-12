@@ -171,7 +171,7 @@ public class RobotContainer
       driverXbox.povRight().onTrue(elevatorMid());
 
       driverXbox.povUp().onTrue(elevatorUp());
-    }
+      }
     }
 
   /**
@@ -198,7 +198,7 @@ public class RobotContainer
     return sequence(
       runOnce(() -> {elevator.zeroEncoder();}, elevator),
       runOnce(() -> {elevator.setMotor(0.25);}, elevator),
-      waitUntil(() -> elevator.getAmps() > 18.0),
+      waitUntil(() -> elevator.getAmps() > 12.0),
       runOnce(() -> {elevator.stopMotor();}, elevator),
       runOnce(() -> {elevator.calibrate();}, elevator),
       elevator.moveToPosition(0.0)

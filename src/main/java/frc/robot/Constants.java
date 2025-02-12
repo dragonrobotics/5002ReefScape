@@ -51,11 +51,14 @@ public final class Constants
     //Motor controllers
     public final static int m_elevator = 1;
     public final static int m_elevatorFollower = 2;
+
+    public static final double elvatorConversionFactor = 1;
   }
 
   public static final class RobotConstants{
 
     public static final double elevatorHeight = 28.0;
+    
 
   }
 }
