@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.OperatorConstants;
 
 
 public class Elevator extends SubsystemBase{
@@ -31,8 +32,8 @@ public class Elevator extends SubsystemBase{
 
     Constants.OperatorConstants constants;
 
-    final SparkMax m_elevator = new SparkMax(constants.m_elevator, MotorType.kBrushless);
-    final SparkMax m_follower = new SparkMax(constants.m_elevatorFollower, MotorType.kBrushless);
+    final SparkMax m_elevator = new SparkMax(OperatorConstants.m_elevator, MotorType.kBrushless);
+    final SparkMax m_follower = new SparkMax(OperatorConstants.m_elevatorFollower, MotorType.kBrushless);
 
     SparkMaxConfig mainConfig = new SparkMaxConfig();
     SparkMaxConfig followerConfig = new SparkMaxConfig();
@@ -71,16 +72,43 @@ public class Elevator extends SubsystemBase{
         );
     }
 
-    public void zeroEncoder(){
-        encoder.setPosition(0);
-    }
-    
     public void runElevator(){
         m_elevator.set(controller.calculate(getMeasurement(), controller.getGoal()));
     }
 
+    public void setMotor(Double speed){
+        m_elevator.set(speed);
+    }
+
+    public void stopMotor(){
+        m_elevator.stopMotor();
+    }
+
+    public void zeroEncoder(){
+        encoder.setPosition(0);
+    }
+    
     public double getMeasurement(){
         return encoder.getPosition();
+    }
+
+    public double getAmps(){
+        return m_elevator.getOutputCurrent();
+    }
+
+    public void calibrate(){
+        Double factor = getMeasurement();
+        factor = 17.5 / getMeasurement();
+
+
+        mainConfig.alternateEncoder
+                .positionConversionFactor(factor)
+                .velocityConversionFactor(factor/60);
+
+        followerConfig.alternateEncoder
+                .positionConversionFactor(factor)
+                .velocityConversionFactor(factor/60);
+                
     }
 
     @Override

@@ -49,8 +49,8 @@ public final class Constants
     public static final double TURN_CONSTANT    = 6;
 
     //Motor controllers
-    public final int m_elevator = 1;
-    public final int m_elevatorFollower = 2;
+    public final static int m_elevator = 1;
+    public final static int m_elevatorFollower = 2;
   }
 
   public static final class RobotConstants{

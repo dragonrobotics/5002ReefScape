@@ -10,9 +10,13 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.BooleanEntry;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -23,6 +27,8 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.swervedrive.DriveTrain;
 
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 
 import java.io.File;
 import swervelib.SwerveInputStream;
@@ -35,6 +41,7 @@ import swervelib.SwerveInputStream;
 public class RobotContainer
 {
 
+  public SendableChooser<Boolean> calibrationMode = new SendableChooser<>();
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final         CommandXboxController driverXbox = new CommandXboxController(1);
   // The robot's subsystems and commands are defined here...
@@ -123,10 +130,13 @@ public class RobotContainer
    */
   public RobotContainer()
   {
-    // Configure the trigger bindings
-    configureBindings();
+    calibrationMode.setDefaultOption("Competition", false);
+    calibrationMode.addOption("Calibration", true);
+
+    SmartDashboard.putData("Mode", calibrationMode);
     DriverStation.silenceJoystickConnectionWarning(true);
     NamedCommands.registerCommand("test", Commands.print("I EXIST"));
+    configureBindings();
   }
 
   /**
@@ -146,6 +156,10 @@ public class RobotContainer
       driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
     }
     
+    if(calibrationMode.equals(true)){
+      driverXbox.a().onTrue(calibrateElevator());
+    }
+    else{
       driverXbox.back().onTrue((Commands.runOnce(drivebase::zeroGyro)));
       driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
       /*driverXbox.b().whileTrue(
@@ -157,7 +171,7 @@ public class RobotContainer
       driverXbox.povRight().onTrue(elevatorMid());
 
       driverXbox.povUp().onTrue(elevatorUp());
-      
+    }
     }
 
   /**
@@ -166,6 +180,7 @@ public class RobotContainer
    * @return the command to run in autonomous
    */
   
+   //Moves elevator to different positions, will be revised
   public Command elevatorDown(){
     return runOnce(()-> {elevator.moveToPosition(0.0);}, elevator);
   }
@@ -176,6 +191,18 @@ public class RobotContainer
 
   public Command elevatorUp(){
     return runOnce(()-> {elevator.moveToPosition(28.0);}, elevator);
+  }
+
+  //Calibrates the Elevator conversion factor from the bottom. MAKE SURE IT STARTS AT THE BOTTOM
+  public Command calibrateElevator(){
+    return sequence(
+      runOnce(() -> {elevator.zeroEncoder();}, elevator),
+      runOnce(() -> {elevator.setMotor(0.25);}, elevator),
+      waitUntil(() -> elevator.getAmps() > 18.0),
+      runOnce(() -> {elevator.stopMotor();}, elevator),
+      runOnce(() -> {elevator.calibrate();}, elevator),
+      elevator.moveToPosition(0.0)
+    );
   }
 
   public Command getAutonomousCommand()
