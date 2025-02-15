@@ -174,11 +174,6 @@ public class RobotContainer
       }
     }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
   
    //Moves elevator to different positions, will be revised
   public Command elevatorDown(){
