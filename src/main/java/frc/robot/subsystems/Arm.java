@@ -37,8 +37,6 @@ public class Arm extends SubsystemBase {
 
     final RelativeEncoder rotatorRelativeEncoder = m_armRotator.getEncoder();
     final AbsoluteEncoder rotatorAbsoluteEncoder = m_armRotator.getAbsoluteEncoder();
-    
-    final DigitalInput beamBreak = new DigitalInput(constants.beamBreakId);
 
     static TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(6, 3);
     ProfiledPIDController controller = new ProfiledPIDController(0.5, 0, 0, constraints);
@@ -82,10 +80,6 @@ public class Arm extends SubsystemBase {
 
     public void outake(){
         m_armShooter.set(0.8);
-    }
-
-    public boolean hasCoral(){
-        return !beamBreak.get(); 
     }
 
     public void stop(){
