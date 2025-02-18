@@ -175,6 +175,7 @@ public class RobotContainer
       driverXbox.povRight().onTrue(elevatorMid());
 
       driverXbox.povUp().onTrue(elevatorUp());
+      driverXbox.leftTrigger().onTrue(intake());
       }
     }
 
@@ -225,15 +226,12 @@ public class RobotContainer
     drivebase.setMotorBrake(brake);
   }
 
+
   public Command intake(){
-    if (!arm.hasCoral()){
-      return sequence(arm.moveToPosition(0.0),
-                      runOnce(()->{arm.intake();}), 
-                      waitSeconds(1.0),
-                      runOnce(()->{arm.stop();}));
-    }
-    else{
-      return none();
-    }
+    return sequence(arm.moveToPosition(0.0),
+                    waitSeconds(1.0),
+                    runOnce(()->{arm.intake();}), 
+                    waitSeconds(1.0),
+                    runOnce(()->{arm.stop();}));
   }
 }

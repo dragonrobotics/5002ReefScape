@@ -50,7 +50,6 @@ public class Arm extends SubsystemBase {
         rotatorConfig.encoder
             .positionConversionFactor(1080);
             
-    
         shooterConfig
             .idleMode(IdleMode.kBrake);
         
@@ -69,8 +68,8 @@ public class Arm extends SubsystemBase {
     }
 
     public double getMeasurement(){
-        double remainder = rotatorAbsoluteEncoder.getPosition() % 3;
-        return remainder * 120.0;
+        double remainder = rotatorAbsoluteEncoder.getPosition() / 3.0;
+        return remainder;
     }
 
     public void run(){
@@ -86,7 +85,7 @@ public class Arm extends SubsystemBase {
     }
 
     public boolean hasCoral(){
-        return !beamBreak.get();
+        return !beamBreak.get(); 
     }
 
     public void stop(){
