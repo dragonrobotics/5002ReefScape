@@ -49,17 +49,18 @@ public final class Constants
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;
 
-    //Motor controllers
+    //elevator Motor controllers
     public final static int m_elevator = 2;
     public final static int m_elevatorFollower = 6;
     
-
-
     public static final double elvatorConversionFactor = 1;
 
     //Arm Motor controllers
-    public final int m_armRotator = 3;
-    public final int m_armShooter = 4;
+    public final int m_armRotator = 15;
+    public final int m_armShooter = 1;
+
+    //Climber Motor Controllers
+    public final int m_climber = 4;
 
     //Arm Constants
     public final int beamBreakId = 0;
