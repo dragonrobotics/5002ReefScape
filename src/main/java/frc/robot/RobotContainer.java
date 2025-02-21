@@ -23,11 +23,14 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.swervedrive.DriveTrain;
 
+import static edu.wpi.first.wpilibj2.command.Commands.none;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 
 import java.io.File;
@@ -42,6 +45,7 @@ public class RobotContainer
 {
 
   public SendableChooser<Boolean> calibrationMode = new SendableChooser<>();
+  final Arm arm = new Arm(0.5, 0, 0);
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final         CommandXboxController driverXbox = new CommandXboxController(1);
   // The robot's subsystems and commands are defined here...
@@ -171,6 +175,7 @@ public class RobotContainer
       driverXbox.povRight().onTrue(elevatorMid());
 
       driverXbox.povUp().onTrue(elevatorUp());
+      driverXbox.leftTrigger().onTrue(intake());
       }
     }
 
@@ -214,5 +219,14 @@ public class RobotContainer
   public void setMotorBrake(boolean brake)
   {
     drivebase.setMotorBrake(brake);
+  }
+
+
+  public Command intake(){
+    return sequence(arm.moveToPosition(0.0),
+                    waitSeconds(1.0),
+                    runOnce(()->{arm.intake();}), 
+                    waitSeconds(1.0),
+                    runOnce(()->{arm.stop();}));
   }
 }
