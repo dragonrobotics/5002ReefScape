@@ -54,7 +54,7 @@ public class Arm extends SubsystemBase {
         m_armRotator.configure(rotatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         m_armShooter.configure(shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-
+        controller.setTolerance(1);
         controller.setGoal(0);
     }
 
