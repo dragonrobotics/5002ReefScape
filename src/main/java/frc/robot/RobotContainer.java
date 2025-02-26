@@ -32,6 +32,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
+import frc.robot.autoAlign;
 
 import java.io.File;
 import swervelib.SwerveInputStream;
@@ -53,6 +54,8 @@ public class RobotContainer
                                                                                 "swerve"));
 
   private final Elevator elevator = new Elevator();
+  public final autoAlign align = new autoAlign(drivetrain, 1);
+
   // Applies deadbands and inverts controls because joysticks
   // are back-right positive while robot
   // controls are front-left positive
